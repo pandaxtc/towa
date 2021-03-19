@@ -1,0 +1,19 @@
+.squareButton {
+  background: white;
+  width: 32px;
+  height: 32px;
+
+  background: #ffffff;
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+  border: 0;
+  border-radius: 8px;
+}
+
+.interiorButton {
+  display: block !important; /* to override OSD element styles :( */
+  height: 32px !important;
+  width: 32px !important;
+
+  background: none;
+  border: none;
+}

@@ -1,0 +1,40 @@
+.zoomButtonDiv {
+  position: absolute;
+  width: 32px;
+  height: 64px;
+
+  background: #ffffff;
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.zoomButton {
+  position: absolute !important; /* to override OSD element styles :( */
+  width: 24px;
+  height: 24px;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+}
+
+.zoomInButton {
+  left: calc(50% - 24px / 2);
+  top: 4px;
+}
+
+.zoomOutButton {
+  left: calc(50% - 24px / 2);
+  bottom: 3px;
+}
+
+.line {
+  position: absolute;
+  width: 21px;
+  height: 1px;
+  left: 6px;
+  top: 33px;
+
+  background: #dcdcdc;
+  border: none;
+}

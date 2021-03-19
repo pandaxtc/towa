@@ -1,0 +1,31 @@
+.osdViewer {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+}
+
+.homeButton {
+  position: absolute;
+  left: 22px;
+  top: 22px;
+}
+
+.zoomButton {
+  position: absolute;
+  left: 22px;
+  top: 70px;
+}
+
+.menuButton {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+}
+
+.fullscreenButton {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+}
