@@ -8,24 +8,54 @@
   border-radius: 8px;
 }
 
+.zoomButtonDiv:hover {
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
 .zoomButton {
   position: absolute !important; /* to override OSD element styles :( */
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
 
   background: transparent;
   border: none;
-  border-radius: 8px;
+}
+
+.zoomButton:focus-visible {
+  outline: #2196f3 solid 2px;
+}
+
+.zoomButton:active {
+  transition: background 0.1s ease;
+  background: #dedede;
+}
+
+.zoomButton svg {
+  fill: #222;
+}
+
+.zoomButton:hover svg {
+  fill: #111;
+}
+
+.zoomButton:active svg {
+  fill: #000;
 }
 
 .zoomInButton {
-  left: calc(50% - 24px / 2);
-  top: 4px;
+  position: absolute;
+  width: 32px;
+  height: 33px;
+  top: 0px;
+  border-radius: 8px 8px 0px 0px;
 }
 
 .zoomOutButton {
-  left: calc(50% - 24px / 2);
-  bottom: 3px;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  bottom: 0px;
+  border-radius: 0px 0px 8px 8px;
 }
 
 .line {
@@ -33,8 +63,23 @@
   width: 21px;
   height: 1px;
   left: 6px;
-  top: 33px;
+  top: 32px;
 
   background: #dcdcdc;
   border: none;
+}
+
+.zoomButtonIcon {
+  position: absolute;
+  left: calc(50% - 24px/2);
+  width: 24px;
+  height: 24px;
+}
+
+.zoomInButtonIcon {
+  top: 4px;
+}
+
+.zoomOutButtonIcon {
+  bottom: 3px;
 }

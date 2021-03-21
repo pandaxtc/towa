@@ -12,3 +12,7 @@ body {
 div.openseadragon-container {
   z-index: -1;
 }
+
+.navigator {
+  border: 0 !important;
+}

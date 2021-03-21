@@ -4,3 +4,6 @@ export const zoomButton: string;
 export const zoomInButton: string;
 export const zoomOutButton: string;
 export const line: string;
+export const zoomButtonIcon: string;
+export const zoomInButtonIcon: string;
+export const zoomOutButtonIcon: string;

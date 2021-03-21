@@ -1,13 +1,15 @@
 import React from "react";
-import menu from "../icons/more_horiz-24px.svg";
-import home from "../icons/home-24px.svg";
-import fullscreen from "../icons/fullscreen-24px.svg";
+import Menu from "../icons/more_horiz-24px.svg";
+import Home from "../icons/home-24px.svg";
+import Fullscreen from "../icons/fullscreen-24px.svg";
+import ExitFullscreen from "../icons/fullscreen_exit-24px.svg"
 import * as style from "./square-button.module.css";
 
-const BUTTON_ICONS: { [key: string]: string } = {
-  menu,
-  home,
-  fullscreen,
+const BUTTON_ICONS: { [key: string]: any } = {
+  menu: Menu,
+  home: Home,
+  fullscreen: Fullscreen,
+  exitFullscreen: ExitFullscreen
 };
 
 export default function SquareButton({
@@ -19,10 +21,11 @@ export default function SquareButton({
   id: string;
   className: string;
 }) {
+  const Icon = BUTTON_ICONS[icon]
   return (
-    <div className={`${className} ${style.squareButton}`}>
-      <button className={style.interiorButton} id={id}>
-        <img src={BUTTON_ICONS[icon]}></img>
+    <div className={className}>
+      <button className={style.squareButton} id={id}>
+        <Icon className={style.buttonIcon}/>
       </button>
     </div>
   );

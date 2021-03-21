@@ -6,5 +6,23 @@
 
 module.exports = {
   /* Your site config here */
-  plugins: ["gatsby-plugin-dts-css-modules"],
+  plugins: [
+    "gatsby-plugin-dts-css-modules",
+    "gatsby-transformer-json",
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `mosaics`,
+        path: `${__dirname}/content/mosaics.json`,
+      },
+    },
+    {
+      resolve: "gatsby-plugin-react-svg",
+      options: {
+        rule: {
+          include: /icons/
+        },
+      },
+    },
+  ],
 };

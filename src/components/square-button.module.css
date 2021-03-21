@@ -1,19 +1,52 @@
 .squareButton {
-  background: white;
-  width: 32px;
-  height: 32px;
-
-  background: #ffffff;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
-  border: 0;
-  border-radius: 8px;
-}
-
-.interiorButton {
   display: block !important; /* to override OSD element styles :( */
   height: 32px !important;
   width: 32px !important;
 
-  background: none;
-  border: none;
+  background: #ffffff;
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+  border: 0;
+  outline: none;
+  border-radius: 8px;
 }
+
+.squareButton:hover {
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.squareButton:focus {
+  outline: none;
+}
+
+.squareButton:focus-visible {
+  outline: #2196f3 solid 2px;
+}
+
+.squareButton:active {
+  transition: background 0.1s ease;
+  background: #dedede;
+}
+
+.squareButton svg {
+  fill: #222;
+}
+
+.squareButton:hover svg {
+  fill: #111;
+}
+
+.squareButton:active svg {
+  fill: #000;
+}
+
+.buttonIcon {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+}
+

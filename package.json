@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-hello-world",
+  "name": "towa",
   "private": true,
-  "description": "A simplified bare-bones starter for Gatsby",
+  "description": "A DeepZoom image viewer",
   "version": "0.1.0",
-  "license": "0BSD",
+  "license": "MIT",
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
@@ -16,6 +16,8 @@
   "dependencies": {
     "gatsby": "^3.0.1",
     "gatsby-plugin-react-svg": "^3.0.0",
+    "gatsby-source-filesystem": "^3.1.0",
+    "gatsby-transformer-json": "^3.1.0",
     "openseadragon": "^2.4.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
