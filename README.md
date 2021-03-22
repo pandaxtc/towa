@@ -5,7 +5,7 @@
 
 The tool itself is located in an incomplete form at [towa.dev](https://towa.dev).
 
-towa is built using [Gatsby](https://www.gatsbyjs.com/) and [OpenSeaDragon]().
+towa is built using [Gatsby](https://www.gatsbyjs.com/) and a fork of [OpenSeaDragon](https://github.com/pandaxtc/openseadragon).
 
 ## Installation
 

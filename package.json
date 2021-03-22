@@ -10,15 +10,14 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "start": "npm run develop",
     "serve": "gatsby serve",
-    "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "clean": "gatsby clean"
   },
   "dependencies": {
     "gatsby": "^3.0.1",
     "gatsby-plugin-react-svg": "^3.0.0",
     "gatsby-source-filesystem": "^3.1.0",
     "gatsby-transformer-json": "^3.1.0",
-    "openseadragon": "^2.4.2",
+    "openseadragon": "git://github.com:pandaxtc/openseadragon.git",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
@@ -30,9 +29,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-hello-world"
+    "url": "https://github.com/pandaxtc/towa"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/pandaxtc/towa/issues"
   }
 }
