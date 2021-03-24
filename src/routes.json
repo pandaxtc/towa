@@ -1,0 +1,16 @@
+{
+  "routes": [
+    {
+      "name": "ookami_mio",
+      "dziURL": "https://towa-gigapixel.b-cdn.net/ookami_mio/ookami_mio.dzi",
+      "filesURL": "https://towa-gigapixel.b-cdn.net/ookami_mio/ookami_mio_files/",
+      "title": "大神ミオ_500MP",
+      "description": "A 20 gigapixel photomosaic of Ookami Mio of Hololive, made using images from danbooru."
+    },
+    {
+      "name": "duomo",
+      "dziURL": "https://openseadragon.github.io/example-images/duomo/duomo.dzi"
+    }
+  ],
+  "viewerAtIndex": true
+}

@@ -1,5 +1,6 @@
 .fileMenu {
   position: absolute;
+  box-sizing: border-box;
   width: 240px;
   height: 140px;
   left: 22px;

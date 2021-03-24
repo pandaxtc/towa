@@ -1,40 +1,46 @@
 {
   "name": "towa",
-  "private": true,
-  "description": "A DeepZoom image viewer",
   "version": "0.1.0",
-  "license": "MIT",
-  "scripts": {
-    "build": "gatsby build",
-    "develop": "gatsby develop",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "start": "npm run develop",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean"
-  },
+  "private": true,
   "dependencies": {
-    "gatsby": "^3.0.1",
-    "gatsby-plugin-react-helmet": "^4.1.0",
-    "gatsby-plugin-react-svg": "^3.0.0",
-    "gatsby-source-filesystem": "^3.1.0",
-    "gatsby-transformer-json": "^3.1.0",
-    "openseadragon": "git://github.com:pandaxtc/openseadragon.git",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-helmet": "^6.1.0"
-  },
-  "devDependencies": {
+    "@types/node": "^12.20.6",
     "@types/openseadragon": "^2.4.5",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
     "@types/react-helmet": "^6.1.0",
-    "gatsby-plugin-dts-css-modules": "^1.1.3",
-    "prettier": "2.2.1",
+    "@types/wicg-file-system-access": "^2020.9.1",
+    "openseadragon": "git://github.com:pandaxtc/openseadragon.git",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
     "typescript": "^4.2.3"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pandaxtc/towa"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
   },
-  "bugs": {
-    "url": "https://github.com/pandaxtc/towa/issues"
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.1.7",
+    "prettier": "^2.2.1"
   }
 }

@@ -1,8 +1,8 @@
 import React from "react";
-import Menu from "../icons/more_horiz-24px.svg";
-import Home from "../icons/home-24px.svg";
-import Fullscreen from "../icons/fullscreen-24px.svg";
-import ExitFullscreen from "../icons/fullscreen_exit-24px.svg"
+import {ReactComponent as Menu} from "../icons/more_horiz-24px.svg";
+import {ReactComponent as Home} from "../icons/home-24px.svg";
+import {ReactComponent as Fullscreen} from "../icons/fullscreen-24px.svg";
+import {ReactComponent as ExitFullscreen} from "../icons/fullscreen_exit-24px.svg"
 import * as style from "./square-button.module.css";
 
 const BUTTON_ICONS: { [key: string]: any } = {

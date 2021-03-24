@@ -1,6 +1,6 @@
 import React from "react";
-import Plus from "../icons/add-24px.svg";
-import Minus from "../icons/remove-24px.svg";
+import {ReactComponent as Plus} from "../icons/add-24px.svg";
+import {ReactComponent as Minus} from "../icons/remove-24px.svg";
 import * as style from "./zoom-button.module.css";
 
 export default function ZoomButton({

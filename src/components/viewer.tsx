@@ -1,24 +1,23 @@
 import OpenSeaDragon from "openseadragon";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import SquareButton from "../components/square-button";
 import ZoomButton from "../components/zoom-button";
 import FileMenu from "../components/file-menu";
 import * as style from "./viewer.module.css";
-import fileMenuStyle from "./file-menu.module.css";
+import { useHistory } from "react-router";
+import type History from "react-router";
 
-interface LocalDZISource {}
+interface LocalDZISource {
+  dziHandle: FileSystemFileHandle;
+  filesHandle: FileSystemDirectoryHandle;
+}
 
 export interface RemoteDZISpec {
   dziURL: string;
   filesURL?: string;
   title?: string;
   description?: string;
-}
-
-export interface ViewerOptions {
-  showInfoPanel?: boolean;
-  showFilePanel?: boolean;
 }
 
 interface XMLDZIObject {
@@ -33,6 +32,12 @@ interface XMLDZIObject {
       Width: string | number | null;
     };
   };
+}
+
+interface NavCoordinates {
+  x?: number;
+  y?: number;
+  level?: number;
 }
 
 const HOME_BUTTON_ID = "homeButton";
@@ -78,16 +83,25 @@ function parseXMLDziString(dziString: string): XMLDZIObject {
 export default function Viewer({
   imageToOpen,
   osdOptions,
-  viewerOptions,
+  navTo,
+  history,
 }: {
-  imageToOpen: RemoteDZISpec | null;
-  osdOptions: OpenSeaDragon.Options | null;
-  viewerOptions: ViewerOptions | null;
+  imageToOpen?: RemoteDZISpec;
+  osdOptions?: OpenSeaDragon.Options;
+  navTo?: NavCoordinates;
+  history?: History;
 }) {
-  const [viewer, setViewer] = useState<OpenSeaDragon.Viewer | null>(null);
-  const [image, setImage] = useState<RemoteDZISpec | null>(imageToOpen);
+  const [viewer, setViewer] = useState<OpenSeaDragon.Viewer | undefined>(
+    undefined
+  );
+  const viewerRef = useRef<OpenSeaDragon.Viewer | undefined>();
+
+  const [image, setImage] = useState<RemoteDZISpec | undefined>(imageToOpen);
+
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const hhh = useHistory();
 
   // open image by URL
   const openRemoteImage = (
@@ -122,10 +136,10 @@ export default function Viewer({
   };
 
   // Only available on Chrome because of FileSystem Access API support.
-  const openLocalImage = async (viewer: OpenSeaDragon.Viewer) => {
-    const [dziHandle] = await window.showOpenFilePicker();
-    const filesHandle = await window.showDirectoryPicker();
-
+  const openLocalImage = async (
+    viewer: OpenSeaDragon.Viewer,
+    { dziHandle, filesHandle }: LocalDZISource
+  ) => {
     const dziFile: File = await dziHandle.getFile();
     const dziObject = parseXMLDziString(await dziFile.text());
 
@@ -143,24 +157,10 @@ export default function Viewer({
     viewer.open(tileSource);
   };
 
-  const InitOpenSeaDragon = () => {
-    viewer?.destroy();
-    setViewer(
-      OpenSeaDragon({
-        id: "osd-viewer",
-        homeButton: HOME_BUTTON_ID,
-        zoomInButton: ZOOM_IN_BUTTON_ID,
-        zoomOutButton: ZOOM_OUT_BUTTON_ID,
-        fullPageButton: FULLSCREEN_BUTTON_ID,
-        ...DEFAULT_OSD_SETTINGS,
-        ...osdOptions,
-      })
-    );
-    OpenSeaDragon.setImageFormatsSupported({ webp: true });
-  };
-
+  // setup and teardown
   useEffect(() => {
-    InitOpenSeaDragon();
+    // @ts-ignore
+    OpenSeaDragon.setImageFormatsSupported({ webp: true });
 
     // toggle fullscreen button appearance when fullscreen
     let fullscreenListener = () => {
@@ -169,25 +169,59 @@ export default function Viewer({
     document.addEventListener("fullscreenchange", fullscreenListener);
 
     return () => {
-      viewer?.destroy();
+      console.log("cleaning up.");
+      viewerRef.current?.destroy();
       document.removeEventListener("fullscreenchange", fullscreenListener);
     };
   }, []);
 
-  // open remote image when image is changed
+  // instantiate viewer and update
+  useEffect(() => {
+    setViewer((oldViewer) => {
+      // this currently also destroys the buttons
+      // TODO: patch OSD to not destroy buttons, i guess?
+      oldViewer?.destroy();
+      return OpenSeaDragon({
+        id: "osd-viewer",
+        homeButton: HOME_BUTTON_ID,
+        zoomInButton: ZOOM_IN_BUTTON_ID,
+        zoomOutButton: ZOOM_OUT_BUTTON_ID,
+        fullPageButton: FULLSCREEN_BUTTON_ID,
+        ...DEFAULT_OSD_SETTINGS,
+        ...osdOptions,
+      });
+    });
+  }, [osdOptions]);
+
+  // keep image state updated
+  useEffect(() => {
+    setImage(imageToOpen);
+  }, [imageToOpen]);
+
+  // keep viewer ref updated
+  useEffect(() => {
+    viewerRef.current = viewer;
+  }, [viewer]);
+
+  // open remote image when prop is changed
   useEffect(() => {
     if (image && viewer) {
       openRemoteImage(viewer, image);
+    } else {
+      viewer?.close();
     }
   }, [image, viewer]);
 
   // TODO: add info panel component
-  // [Panel animation]
-  // Step 1: swap button for menudiv
+  // TODO: make panel and menu close when you click outside of them
   return (
     <div className={style.osdViewer} id="osd-viewer">
       <Helmet>
-        {imageToOpen?.title && <title>{imageToOpen.title}</title>}
+        {imageToOpen?.title ? (
+          <title>{imageToOpen.title}</title>
+        ) : (
+          <title>"towa"</title>
+        )}
       </Helmet>
       <SquareButton
         className={style.homeButton}
@@ -205,9 +239,12 @@ export default function Viewer({
             className={style.menuButton}
             id={MENU_BUTTON_ID}
             icon="menu"
-            onClick={() => setIsMenuOpen(val => !val)}
+            onClick={() => {
+              setIsMenuOpen((val) => !val);
+              hhh.push("/");
+            }}
           />
-          <FileMenu className={style.menu} isOpen={isMenuOpen}/>
+          <FileMenu className={style.menu} isOpen={isMenuOpen} />
         </>
       )}
       <SquareButton

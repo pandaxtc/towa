@@ -1,6 +1,6 @@
 import React from "react";
-import File from "../icons/folder_open-24px.svg";
-import Link from "../icons/link-24px.svg";
+import {ReactComponent as File} from "../icons/folder_open-24px.svg";
+import {ReactComponent as Link} from "../icons/link-24px.svg";
 import * as style from "./file-menu.module.css";
 
 export default function FileMenu({

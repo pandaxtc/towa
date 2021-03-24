@@ -2,6 +2,6 @@ import React from "react";
 
 export default function FourOhFour() {
   return (
-    <div>Uh oh, 404!</div>
+    <div>404 - Page Not Found!</div>
   );
 }
