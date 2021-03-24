@@ -9,6 +9,7 @@ module.exports = {
   plugins: [
     "gatsby-plugin-dts-css-modules",
     "gatsby-transformer-json",
+    "gatsby-plugin-react-helmet",
     {
       resolve: `gatsby-source-filesystem`,
       options: {

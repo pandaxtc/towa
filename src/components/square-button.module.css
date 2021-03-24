@@ -4,14 +4,16 @@
   width: 32px !important;
 
   background: #ffffff;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14),
+    0px 1px 8px rgba(0, 0, 0, 0.12);
   border: 0;
   outline: none;
   border-radius: 8px;
 }
 
 .squareButton:hover {
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  background: #f6f6f6;
+  /*box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);*/
 }
 
 .squareButton:focus {
@@ -28,7 +30,7 @@
 }
 
 .squareButton svg {
-  fill: #222;
+  fill: #333;
 }
 
 .squareButton:hover svg {
@@ -49,4 +51,3 @@
   width: 24px;
   height: 24px;
 }
-

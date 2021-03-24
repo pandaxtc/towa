@@ -4,3 +4,4 @@ export const homeButton: string;
 export const zoomButton: string;
 export const menuButton: string;
 export const fullscreenButton: string;
+export const menu: string;

@@ -16,15 +16,17 @@ export default function SquareButton({
   icon,
   id,
   className,
+  onClick
 }: {
   icon: string;
   id: string;
   className: string;
+  onClick?: () => void;
 }) {
   const Icon = BUTTON_ICONS[icon]
   return (
     <div className={className}>
-      <button className={style.squareButton} id={id}>
+      <button className={style.squareButton} onClick={onClick} id={id}>
         <Icon className={style.buttonIcon}/>
       </button>
     </div>

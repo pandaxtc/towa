@@ -4,13 +4,14 @@
   height: 64px;
 
   background: #ffffff;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14),
+    0px 1px 8px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
 }
 
-.zoomButtonDiv:hover {
+/*.zoomButtonDiv:hover {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-}
+}*/
 
 .zoomButton {
   position: absolute !important; /* to override OSD element styles :( */
@@ -21,17 +22,21 @@
   border: none;
 }
 
+.zoomButton:hover {
+  background: #f6f6f6;
+}
+
 .zoomButton:focus-visible {
   outline: #2196f3 solid 2px;
 }
 
 .zoomButton:active {
   transition: background 0.1s ease;
-  background: #dedede;
+  background: #dfdfdf;
 }
 
 .zoomButton svg {
-  fill: #222;
+  fill: #555;
 }
 
 .zoomButton:hover svg {
@@ -71,7 +76,7 @@
 
 .zoomButtonIcon {
   position: absolute;
-  left: calc(50% - 24px/2);
+  left: calc(50% - 24px / 2);
   width: 24px;
   height: 24px;
 }
