@@ -6,8 +6,7 @@ import SquareButton from "../components/square-button";
 import ZoomButton from "../components/zoom-button";
 import FileMenu from "../components/file-menu";
 import * as style from "./viewer.module.css";
-import { useHistory, useLocation } from "react-router";
-import { History as RHistory } from "history";
+import { useHistory } from "react-router";
 
 interface LocalDZISource {
   dziHandle: FileSystemFileHandle;
