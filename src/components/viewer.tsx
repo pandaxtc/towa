@@ -1,12 +1,13 @@
 import OpenSeaDragon from "openseadragon";
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
+import { debounce } from "lodash";
 import SquareButton from "../components/square-button";
 import ZoomButton from "../components/zoom-button";
 import FileMenu from "../components/file-menu";
 import * as style from "./viewer.module.css";
-import { useHistory } from "react-router";
-import type History from "react-router";
+import { useHistory, useLocation } from "react-router";
+import { History as RHistory } from "history";
 
 interface LocalDZISource {
   dziHandle: FileSystemFileHandle;
@@ -84,24 +85,32 @@ export default function Viewer({
   imageToOpen,
   osdOptions,
   navTo,
-  history,
 }: {
   imageToOpen?: RemoteDZISpec;
   osdOptions?: OpenSeaDragon.Options;
   navTo?: NavCoordinates;
-  history?: History;
 }) {
   const [viewer, setViewer] = useState<OpenSeaDragon.Viewer | undefined>(
     undefined
   );
   const viewerRef = useRef<OpenSeaDragon.Viewer | undefined>();
 
-  const [image, setImage] = useState<RemoteDZISpec | undefined>(imageToOpen);
+  const [image, setImage] = useState<
+    RemoteDZISpec | LocalDZISource | undefined
+  >(imageToOpen);
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-  const hhh = useHistory();
+  // ref to options, because changing the prop shouldn't do anything
+  // we can't re-initialize the viewer :(
+  const osdOptionRef = useRef(osdOptions);
+
+  // used to set initial viewport
+  const initialNavRef = useRef(navTo);
+
+  // history is mutable, so this probably doesn't update...?
+  const history = useHistory();
 
   // open image by URL
   const openRemoteImage = (
@@ -162,6 +171,25 @@ export default function Viewer({
     // @ts-ignore
     OpenSeaDragon.setImageFormatsSupported({ webp: true });
 
+    console.log("initializing osd");
+    const viewer = OpenSeaDragon({
+      id: "osd-viewer",
+      homeButton: HOME_BUTTON_ID,
+      zoomInButton: ZOOM_IN_BUTTON_ID,
+      zoomOutButton: ZOOM_OUT_BUTTON_ID,
+      fullPageButton: FULLSCREEN_BUTTON_ID,
+      ...DEFAULT_OSD_SETTINGS,
+      ...osdOptionRef.current,
+    });
+    setViewer(viewer);
+    viewer.addOnceHandler("open", () => {
+      const navTo = initialNavRef.current;
+      viewer.viewport.panTo(new OpenSeaDragon.Point(navTo?.x, navTo?.y));
+      if (navTo?.level !== undefined) {
+        viewer.viewport.zoomTo(navTo.level);
+      }
+    });
+
     // toggle fullscreen button appearance when fullscreen
     let fullscreenListener = () => {
       setIsFullscreen(Boolean(document.fullscreenElement));
@@ -175,42 +203,80 @@ export default function Viewer({
     };
   }, []);
 
-  // instantiate viewer and update
+  // add pan/zoom listeners
+  // add if imageToOpen, remove otherwise
   useEffect(() => {
-    setViewer((oldViewer) => {
-      // this currently also destroys the buttons
-      // TODO: patch OSD to not destroy buttons, i guess?
-      oldViewer?.destroy();
-      return OpenSeaDragon({
-        id: "osd-viewer",
-        homeButton: HOME_BUTTON_ID,
-        zoomInButton: ZOOM_IN_BUTTON_ID,
-        zoomOutButton: ZOOM_OUT_BUTTON_ID,
-        fullPageButton: FULLSCREEN_BUTTON_ID,
-        ...DEFAULT_OSD_SETTINGS,
-        ...osdOptions,
-      });
-    });
-  }, [osdOptions]);
+    if (imageToOpen && viewer) {
+      // updates route with image coordinates
+      const updateHashRoute = debounce(() => {
+        console.log("pan event fired");
+        const center = viewer.viewport.getCenter();
+        const zoom = viewer.viewport.getZoom();
 
-  // keep image state updated
+        const navHash =
+          "/" +
+          center.x.toFixed(4) +
+          "/" +
+          center.y.toFixed(4) +
+          "/" +
+          zoom.toFixed(4);
+
+        // prevent navigation loop...
+        if (navHash !== window.location.hash.substr(1)) {
+          console.log(`updating hash to ${navHash}`);
+          history.replace(navHash);
+        }
+      }, 500);
+
+      console.log("adding event handlers");
+      viewer.addHandler("pan", updateHashRoute);
+      viewer.addHandler("zoom", updateHashRoute);
+
+      return () => {
+        viewer.removeHandler("pan", updateHashRoute);
+        viewer.removeHandler("zoom", updateHashRoute);
+      };
+    }
+  }, [imageToOpen, viewer, history]);
+
+  // update image state when prop is updated
+  // never actually used, I think?
   useEffect(() => {
     setImage(imageToOpen);
   }, [imageToOpen]);
 
-  // keep viewer ref updated
+  // keep viewer ref updated for cleanup on component unmount
   useEffect(() => {
     viewerRef.current = viewer;
   }, [viewer]);
 
-  // open remote image when prop is changed
+  // open image when state is changed
   useEffect(() => {
     if (image && viewer) {
-      openRemoteImage(viewer, image);
+      if ("dziURL" in image) openRemoteImage(viewer, image);
+      else openLocalImage(viewer, image);
     } else {
       viewer?.close();
     }
   }, [image, viewer]);
+
+  // pan to new location when navTo updated
+  useEffect(() => {
+    if (navTo && viewer) {
+      const center = viewer.viewport.getCenter();
+      const zoom = viewer.viewport.getZoom();
+      if (
+        navTo.x !== +center.x.toFixed(4) ||
+        navTo.y !== +center.y.toFixed(4)
+      ) {
+        console.log("requesting a pan");
+        viewer.viewport.panTo(new OpenSeaDragon.Point(navTo.x, navTo.y));
+      }
+      if (navTo.level && navTo.level !== +zoom.toFixed(4)) {
+        viewer.viewport.zoomTo(navTo.level);
+      }
+    }
+  }, [navTo, image, viewer]);
 
   // TODO: add info panel component
   // TODO: make panel and menu close when you click outside of them
@@ -241,7 +307,6 @@ export default function Viewer({
             icon="menu"
             onClick={() => {
               setIsMenuOpen((val) => !val);
-              hhh.push("/");
             }}
           />
           <FileMenu className={style.menu} isOpen={isMenuOpen} />
