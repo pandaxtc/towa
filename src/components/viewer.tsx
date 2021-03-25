@@ -170,7 +170,6 @@ export default function Viewer({
     // @ts-ignore
     OpenSeaDragon.setImageFormatsSupported({ webp: true });
 
-    console.log("initializing osd");
     const viewer = OpenSeaDragon({
       id: "osd-viewer",
       homeButton: HOME_BUTTON_ID,
@@ -181,9 +180,12 @@ export default function Viewer({
       ...osdOptionRef.current,
     });
     setViewer(viewer);
+
     viewer.addOnceHandler("open", () => {
       const navTo = initialNavRef.current;
-      viewer.viewport.panTo(new OpenSeaDragon.Point(navTo?.x, navTo?.y));
+      if (navTo?.x !== undefined && navTo?.y !== undefined) {
+        viewer.viewport.panTo(new OpenSeaDragon.Point(navTo?.x, navTo?.y));
+      }
       if (navTo?.level !== undefined) {
         viewer.viewport.zoomTo(navTo.level);
       }
@@ -208,7 +210,6 @@ export default function Viewer({
     if (imageToOpen && viewer) {
       // updates route with image coordinates
       const updateHashRoute = debounce(() => {
-        console.log("pan event fired");
         const center = viewer.viewport.getCenter();
         const zoom = viewer.viewport.getZoom();
 
@@ -222,12 +223,10 @@ export default function Viewer({
 
         // prevent navigation loop...
         if (navHash !== window.location.hash.substr(1)) {
-          console.log(`updating hash to ${navHash}`);
           history.replace(navHash);
         }
       }, 500);
 
-      console.log("adding event handlers");
       viewer.addHandler("pan", updateHashRoute);
       viewer.addHandler("zoom", updateHashRoute);
 
@@ -265,13 +264,13 @@ export default function Viewer({
       const center = viewer.viewport.getCenter();
       const zoom = viewer.viewport.getZoom();
       if (
-        navTo.x !== +center.x.toFixed(4) ||
-        navTo.y !== +center.y.toFixed(4)
+        navTo.x !== undefined &&
+        navTo.y !== undefined &&
+        (navTo.x !== +center.x.toFixed(4) || navTo.y !== +center.y.toFixed(4))
       ) {
-        console.log("requesting a pan");
         viewer.viewport.panTo(new OpenSeaDragon.Point(navTo.x, navTo.y));
       }
-      if (navTo.level && navTo.level !== +zoom.toFixed(4)) {
+      if (navTo.level !== undefined && navTo.level !== +zoom.toFixed(4)) {
         viewer.viewport.zoomTo(navTo.level);
       }
     }
