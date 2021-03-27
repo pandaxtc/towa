@@ -1,19 +1,21 @@
 import OpenSeaDragon from "openseadragon";
+import debounce from "lodash-es/debounce";
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
-import { debounce } from "lodash";
-import SquareButton from "../components/square-button";
-import ZoomButton from "../components/zoom-button";
-import FileMenu from "../components/file-menu";
-import * as style from "./viewer.module.css";
 import { useHistory } from "react-router";
 
-interface LocalDZISource {
+import FileMenu from "./file-menu";
+import RemoteFileModal from "./file-modal-remote";
+import SquareButton from "./square-button";
+import ZoomButton from "./zoom-button";
+import style from "./viewer.module.css";
+
+export interface LocalDZISource {
   dziHandle: FileSystemFileHandle;
   filesHandle: FileSystemDirectoryHandle;
 }
 
-export interface RemoteDZISpec {
+export interface RemoteDZISource {
   dziURL: string;
   filesURL?: string;
   title?: string;
@@ -85,7 +87,7 @@ export default function Viewer({
   osdOptions,
   navTo,
 }: {
-  imageToOpen?: RemoteDZISpec;
+  imageToOpen?: RemoteDZISource;
   osdOptions?: OpenSeaDragon.Options;
   navTo?: NavCoordinates;
 }) {
@@ -95,7 +97,7 @@ export default function Viewer({
   const viewerRef = useRef<OpenSeaDragon.Viewer | undefined>();
 
   const [image, setImage] = useState<
-    RemoteDZISpec | LocalDZISource | undefined
+    RemoteDZISource | LocalDZISource | undefined
   >(imageToOpen);
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -114,7 +116,7 @@ export default function Viewer({
   // open image by URL
   const openRemoteImage = (
     viewer: OpenSeaDragon.Viewer,
-    image: RemoteDZISpec
+    image: RemoteDZISource
   ) => {
     fetch(image.dziURL)
       .then((res) => {
@@ -122,7 +124,7 @@ export default function Viewer({
         return res.text();
       })
       .then((res) => {
-        const filesURL =
+        let filesURL =
           // If no "_files" URL specified, assume "name_files" for "name.dzi"
           image.filesURL ??
           (() => {
@@ -130,6 +132,10 @@ export default function Viewer({
             let basename = path.pop()?.split(".")[0];
             return new URL(basename + "_files/", image.dziURL).href;
           })();
+
+        if (!filesURL.endsWith("/")) {
+          filesURL += "/";
+        }
 
         let dzi = parseXMLDziString(res);
         dzi.Image.Url = filesURL;
@@ -280,13 +286,11 @@ export default function Viewer({
   // TODO: make panel and menu close when you click outside of them
   return (
     <div className={style.osdViewer} id="osd-viewer">
-      <Helmet>
-        {imageToOpen?.title ? (
-          <title>{imageToOpen.title}</title>
-        ) : (
-          <title>"towa"</title>
-        )}
-      </Helmet>
+      {imageToOpen && (
+        <Helmet>
+          <title>{imageToOpen.title ?? imageToOpen.dziURL}</title>
+        </Helmet>
+      )}
       <SquareButton
         className={style.homeButton}
         id={HOME_BUTTON_ID}
@@ -307,7 +311,13 @@ export default function Viewer({
               setIsMenuOpen((val) => !val);
             }}
           />
-          <FileMenu className={style.menu} isOpen={isMenuOpen} />
+          <FileMenu
+            setImageCallback={(image: LocalDZISource | RemoteDZISource) =>
+              setImage(image)
+            }
+            className={style.menu}
+            isOpen={isMenuOpen}
+          />
         </>
       )}
       <SquareButton
