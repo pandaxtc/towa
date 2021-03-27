@@ -5,9 +5,9 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
-import Viewer, { RemoteDZISpec } from "./components/viewer";
-import routeConfig from "./routes.json";
-import osdConfig from "./osd-config.json";
+import Viewer, { RemoteDZISource } from "./components/viewer";
+import routeConfig from "../routes.json";
+import osdConfig from "../osd-config.json";
 import FourOhFour from "./404";
 import { Options } from "openseadragon";
 
@@ -18,7 +18,7 @@ function parseCoordinate(x: string | undefined) {
 }
 
 function ZoomPanRouter(props: {
-  imageToOpen: RemoteDZISpec;
+  imageToOpen: RemoteDZISource;
   osdConfig: Options;
 }) {
   return (

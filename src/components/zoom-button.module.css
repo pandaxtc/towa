@@ -32,18 +32,14 @@
 
 .zoomButton:active {
   transition: background 0.1s ease;
-  background: #dfdfdf;
+  background: #eeeeee;
 }
 
 .zoomButton svg {
-  fill: #555;
+  fill: rgba(0, 0, 0, 0.87);
 }
 
 .zoomButton:hover svg {
-  fill: #111;
-}
-
-.zoomButton:active svg {
   fill: #000;
 }
 

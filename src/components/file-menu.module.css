@@ -1,48 +1,38 @@
 .fileMenu {
-  position: absolute;
-  box-sizing: border-box;
-  width: 240px;
-  height: 140px;
-  left: 22px;
-
-  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0px 16px;
 
   background: #ffffff;
-  /* mdc-elevation--z3 */
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14),
-    0px 1px 8px rgba(0, 0, 0, 0.12);
+  /* mdc-elevation--z5 */
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2), 0px 5px 8px rgba(0, 0, 0, 0.14),
+    0px 1px 14px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
 
-  clip-path: circle(0% at bottom 0 left 0);
-  transition: clip-path 0.05s ease-in-out;
+  transform: scale(0);
+  transform-origin: left bottom;
+  transition: transform 0.075s ease-in-out;
 }
 
 .fileMenuOpen {
-  clip-path: circle(150% at bottom 0 left 0);
+  transform: scale(1);
 }
 
 .menuSection {
-  position: absolute;
-  width: 100%;
-
-  padding-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  margin-top: 12px;
 }
 
 .menuHeader {
-  position: relative;
-  height: 15px;
-  margin-left: 22px;
-  margin-bottom: 3px;
-
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 11px;
-  line-height: 13px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-feature-settings: "cpsp" on;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin: 0px 0px 6px 22px;
 
   color: #000000;
 }
@@ -56,12 +46,21 @@
 }
 
 .menuItem {
-  position: relative;
-  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 22px;
+
+  width: 236px;
   height: 42px;
 
-  background: #fff;
-  border: 0;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0px 0px;
+
+  background: none;
+  border: none;
   outline: none;
 }
 
@@ -74,28 +73,27 @@
 }
 
 .menuIcon {
-  position: absolute;
   width: 20px;
   height: 20px;
-  left: 22px;
-  top: 11px;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
 }
 
 .menuItemText {
-  position: absolute;
-  height: 19px;
-  left: 55px;
-  top: 10px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin-left: 16px;
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;  font-style: normal;
+  font-family: Inter;
+  font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 19px;
-  /* identical to box height */
-
+  line-height: 18px;
   display: flex;
   align-items: center;
 
-  color: #000000;
+  color: rgba(0, 0, 0, 0.87);
 }
