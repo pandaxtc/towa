@@ -19,12 +19,41 @@
   line-height: 30px;
 }
 
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputHeader {
+  display: inline-block;
+  line-height: 14px;
+
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 11px;
+  vertical-align: top;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-feature-settings: 'cpsp' on;
+}
+
+input ~ .inputHeader {
+  margin-top: 10px;
+}
+
 .inputLabel {
-  margin: 10px 0px 0px 11px;
+  color: #000000;
+}
+
+.inputError {
+  float: right;
+  color: #f44336;
 }
 
 .input {
   height: 42px;
+  margin-top: 10px;
   padding: 0px 12px;
 
   background: #FFFFFF;
@@ -41,6 +70,10 @@
   align-items: center;
 
   color: rgba(0, 0, 0, 0.87);
+}
+
+.invalidInput {
+  border: 2px solid #f44336;
 }
 
 .input:focus {
@@ -65,9 +98,7 @@
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
-  line-height: 17px;
-  display: flex;
-  align-items: center;
+  line-height: 18px;
   text-align: center;
   letter-spacing: 1.5px;
   text-transform: uppercase;

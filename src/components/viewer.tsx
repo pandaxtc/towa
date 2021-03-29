@@ -126,7 +126,7 @@ export default function Viewer({
       .then((res) => {
         let filesURL =
           // If no "_files" URL specified, assume "name_files" for "name.dzi"
-          image.filesURL ??
+          image.filesURL?.trim() ??
           (() => {
             let path = new URL(image.dziURL).pathname.split("/");
             let basename = path.pop()?.split(".")[0];
