@@ -1,11 +1,17 @@
-import { defineConfig } from 'vite'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import injectProcessEnv from "rollup-plugin-inject-process-env";
+import reactRefresh from "@vitejs/plugin-react-refresh";
 import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [reactRefresh(), svgr()],
-  define: {
-    'process.env': {} // stub out process.env for react-menu compat
-  }
-})
+export default ({ mode }) => {
+  return {
+    plugins: [reactRefresh(), svgr()],
+    define: {
+      process: {
+        env: {
+          NODE_ENV: mode
+        },
+      },
+    },
+  };
+};
