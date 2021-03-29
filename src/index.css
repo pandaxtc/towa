@@ -26,16 +26,6 @@ h1 {
   font-size: 24px;
 }
 
-h2 {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-feature-settings: 'cpsp' on;
-}
-
 .navigator {
   border: 0 !important; /* override OSD styles */
 }

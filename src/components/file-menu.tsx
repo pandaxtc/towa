@@ -1,11 +1,20 @@
 import Modal from "react-modal";
 import React, { useEffect, useState } from "react";
+import {
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuHeader,
+  MenuItem,
+} from "@szhsin/react-menu";
 
 import RemoteFileModal from "./file-modal-remote";
+import buttonStyle from "./square-button.module.css";
 import style from "./file-menu.module.css";
-import { ReactComponent as File } from "../icons/folder_open-24px.svg";
-import { ReactComponent as Link } from "../icons/link-24px.svg";
+import { ReactComponent as FolderIcon } from "../icons/folder_open-24px.svg";
+import { ReactComponent as LinkIcon } from "../icons/link-24px.svg";
 import { LocalDZISource, RemoteDZISource } from "./viewer";
+import { ReactComponent as MenuIcon } from "../icons/more_horiz-24px.svg";
 
 Modal.setAppElement("#root");
 Object.assign(Modal.defaultStyles.overlay, {
@@ -26,11 +35,9 @@ enum ModalType {
 
 export default function FileMenu({
   className,
-  isOpen,
   setImageCallback,
 }: {
   className: string;
-  isOpen: boolean;
   setImageCallback: (image: RemoteDZISource | LocalDZISource) => void;
 }) {
   const [openModal, setOpenModal] = useState(ModalType.none);
@@ -38,6 +45,9 @@ export default function FileMenu({
   const closeCallback = () => {
     setOpenModal(ModalType.none);
   };
+
+  const supportsFileSystemAccessAPI =
+    "showOpenFilePicker" in window && "showDirectoryPicker" in window;
 
   return (
     <>
@@ -51,29 +61,39 @@ export default function FileMenu({
           closeCallback={closeCallback}
         />
       </Modal>
-      <div
-        className={`${style.fileMenu} ${
-          isOpen ? style.fileMenuOpen : ""
-        } ${className}`}
+      <Menu
+        className={style.fileMenu}
+        offsetY={16}
+        menuButton={
+          <MenuButton className={`${className} ${buttonStyle.squareButton}`}>
+            <MenuIcon className={buttonStyle.buttonIcon} />
+          </MenuButton>
+        }
       >
-        <div className={style.menuSection}>
-          <h2 className={style.menuHeader}>File</h2>
-          <button
-            className={style.menuItem}
-            onClick={() => setOpenModal(ModalType.remote)}
-          >
-            <Link className={style.menuIcon} />
-            <p className={style.menuItemText}>Open from URL</p>
-          </button>
-          <button
-            className={style.menuItem}
-            onClick={() => setOpenModal(ModalType.file)}
-          >
-            <File className={style.menuIcon} />
-            <p className={style.menuItemText}>Open from file</p>
-          </button>
-        </div>
-      </div>
+        <MenuHeader className={style.menuHeader}>File</MenuHeader>
+        <MenuItem
+          className={style.menuItem}
+          onClick={() => {
+            setOpenModal(ModalType.remote);
+            return false;
+          }}
+        >
+          <LinkIcon className={style.menuIcon} />
+          <p className={style.menuItemText}>Open from URL</p>
+        </MenuItem>
+        <MenuItem
+          title={
+            !supportsFileSystemAccessAPI
+              ? "Only supported on Chrome version 86 and above."
+              : undefined
+          }
+          disabled={!supportsFileSystemAccessAPI}
+          className={style.menuItem}
+        >
+          <FolderIcon className={style.menuIcon} />
+          <p className={style.menuItemText}>Open from file</p>
+        </MenuItem>
+      </Menu>
     </>
   );
 }

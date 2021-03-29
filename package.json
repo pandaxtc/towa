@@ -7,6 +7,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@szhsin/react-menu": "^1.9.0",
     "lodash-es": "^4.17.21",
     "openseadragon": "git://github.com:pandaxtc/openseadragon.git",
     "react": "^17.0.0",

@@ -1,14 +1,29 @@
+import "@szhsin/react-menu/dist/index.css";
+
+import Modal from "react-modal";
 import OpenSeaDragon from "openseadragon";
 import debounce from "lodash-es/debounce";
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
+import {
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuHeader,
+  MenuItem,
+} from "@szhsin/react-menu";
 import { useHistory } from "react-router";
 
 import FileMenu from "./file-menu";
-import RemoteFileModal from "./file-modal-remote";
 import SquareButton from "./square-button";
 import ZoomButton from "./zoom-button";
+import buttonStyle from "./square-button.module.css";
+import menuStyle from "./file-menu.module.css";
 import style from "./viewer.module.css";
+import { ReactComponent as FolderIcon } from "../icons/folder_open-24px.svg";
+import { ReactComponent as LinkIcon } from "../icons/link-24px.svg";
+import { ReactComponent as MenuIcon } from "../icons/more_horiz-24px.svg";
 
 export interface LocalDZISource {
   dziHandle: FileSystemFileHandle;
@@ -45,7 +60,6 @@ interface NavCoordinates {
 const HOME_BUTTON_ID = "homeButton";
 const ZOOM_IN_BUTTON_ID = "zoomInButton";
 const ZOOM_OUT_BUTTON_ID = "zoomOutButton";
-const MENU_BUTTON_ID = "menuButton";
 const FULLSCREEN_BUTTON_ID = "fullscreenButton";
 
 const DEFAULT_OSD_SETTINGS: OpenSeaDragon.Options = {
@@ -101,7 +115,6 @@ export default function Viewer({
   >(imageToOpen);
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   // ref to options, because changing the prop shouldn't do anything
   // we can't re-initialize the viewer :(
@@ -301,25 +314,7 @@ export default function Viewer({
         idZoomOut={ZOOM_OUT_BUTTON_ID}
         className={style.zoomButton}
       />
-      {!imageToOpen && (
-        <>
-          <SquareButton
-            className={style.menuButton}
-            id={MENU_BUTTON_ID}
-            icon="menu"
-            onClick={() => {
-              setIsMenuOpen((val) => !val);
-            }}
-          />
-          <FileMenu
-            setImageCallback={(image: LocalDZISource | RemoteDZISource) =>
-              setImage(image)
-            }
-            className={style.menu}
-            isOpen={isMenuOpen}
-          />
-        </>
-      )}
+      {!imageToOpen && <FileMenu setImageCallback={setImage} className={style.menuButton}/>}
       <SquareButton
         className={style.fullscreenButton}
         id={FULLSCREEN_BUTTON_ID}
