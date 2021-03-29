@@ -5,7 +5,7 @@
 
 The tool itself is located in an incomplete form at [towa.dev](https://towa.dev).
 
-towa is built using [Vite](https://vitejs.dev/) and a fork of [OpenSeaDragon](https://github.com/pandaxtc/openseadragon).
+towa is built using [Vite](https://vitejs.dev/) and a [fork of OpenSeaDragon](https://github.com/pandaxtc/openseadragon) that enables viewing on-disk DeepZoom images on browsers that support the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API).
 
 ## Installation
 
