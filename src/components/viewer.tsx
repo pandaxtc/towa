@@ -113,7 +113,6 @@ export default function Viewer({
   const [viewer, setViewer] = useState<OpenSeaDragon.Viewer | undefined>(
     undefined
   );
-  const viewerRef = useRef<OpenSeaDragon.Viewer | undefined>();
 
   const [image, setImage] = useState<
     RemoteDZISource | LocalDZISource | undefined
@@ -132,39 +131,37 @@ export default function Viewer({
   const history = useHistory();
 
   // open image by URL
-  const openRemoteImage = (
+  const openRemoteImage = async (
     viewer: OpenSeaDragon.Viewer,
     image: RemoteDZISource
   ) => {
-    fetch(image.dziURL)
-      .then((res) => {
-        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-        return res.text();
-      })
-      .then((res) => {
-        let filesURL =
-          // If no "_files" URL specified, assume "name_files" for "name.dzi"
-          image.filesURL?.trim() ??
-          (() => {
-            let path = new URL(image.dziURL).pathname.split("/");
-            let basename = path.pop()?.split(".")[0];
-            return new URL(basename + "_files/", image.dziURL).href;
-          })();
+    const res = await fetch(image.dziURL);
+    if (!res.ok)
+      throw new Error(
+        `Error ${res.status} requesting .dzi file: ${res.statusText}`
+      );
+    const xml = await res.text();
 
-        if (!filesURL.endsWith("/")) {
-          filesURL += "/";
+    let filesURL =
+      // If no "_files" URL specified, assume "name_files" for "name.dzi"
+      image.filesURL?.trim() ??
+      (() => {
+        if (!image.dziURL.match(/\.dzi\/?\s*$/i)) {
+          throw new Error("Cannot infer tile URL from .dzi URL!");
         }
+        return image.dziURL.replace(/\.dzi\/?\s*$/i, "_files/");
+      })();
 
-        let dzi = parseXMLDziString(res);
-        dzi.Image.Url = filesURL;
+    if (!filesURL.endsWith("/")) {
+      filesURL += "/";
+    }
 
-        console.log(`opening image with dzi spec ${JSON.stringify(dzi)}`);
+    let dzi = parseXMLDziString(xml);
+    dzi.Image.Url = filesURL;
 
-        viewer.open(dzi);
-      })
-      .catch((err) => {
-        console.error(`Error: ${err.message}`);
-      });
+    console.log(`opening remote image with dzi spec ${JSON.stringify(dzi)}`);
+
+    viewer.open(dzi);
   };
 
   // Only available on Chrome because of FileSystem Access API support.
@@ -186,6 +183,10 @@ export default function Viewer({
       },
     };
 
+    console.log(
+      `opening local image with dzi spec ${JSON.stringify(tileSource)}`
+    );
+
     viewer.open(tileSource);
   };
 
@@ -194,6 +195,7 @@ export default function Viewer({
     // @ts-ignore
     OpenSeaDragon.setImageFormatsSupported({ webp: true });
 
+    // only one viewer object is used throughout.
     const viewer = OpenSeaDragon({
       id: "osd-viewer",
       homeButton: HOME_BUTTON_ID,
@@ -223,7 +225,7 @@ export default function Viewer({
 
     return () => {
       console.log("cleaning up.");
-      viewerRef.current?.destroy();
+      viewer.destroy();
       document.removeEventListener("fullscreenchange", fullscreenListener);
     };
   }, []);
@@ -262,15 +264,10 @@ export default function Viewer({
   }, [imageToOpen, viewer, history]);
 
   // update image state when prop is updated
-  // never actually used, I think?
+  // never actually used in this application, I think?
   useEffect(() => {
     setImage(imageToOpen);
   }, [imageToOpen]);
-
-  // keep viewer ref updated for cleanup on component unmount
-  useEffect(() => {
-    viewerRef.current = viewer;
-  }, [viewer]);
 
   // open image when state is changed
   useEffect(() => {
