@@ -1,4 +1,3 @@
-import injectProcessEnv from "rollup-plugin-inject-process-env";
 import reactRefresh from "@vitejs/plugin-react-refresh";
 import svgr from "vite-plugin-svgr";
 

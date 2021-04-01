@@ -41,7 +41,6 @@
 }
 
 .menuItem:not(:global(.rc-menu__item--disabled)) {
-  color: rgba(0, 0, 0, 0.87);
   fill: rgba(0, 0, 0, 0.87);
 }
 

@@ -22,7 +22,11 @@ export default function RemoteFileModal({
   });
 
   const onSubmit = handleSubmit((e) => {
-    setImageCallback({ dziURL: e.dziURL, filesURL: e.tileURL });
+    setImageCallback({
+      dziURL: e.dziURL,
+      filesURL: e.tileURL ? e.tileURL : undefined,
+    });
+    closeCallback();
   });
 
   return (
@@ -48,7 +52,7 @@ export default function RemoteFileModal({
           })}
         ></input>
         <div className={style.inputHeader}>
-          <label className={style.inputLabel} htmlFor="dziURL">
+          <label className={style.inputLabel} htmlFor="tileURL">
             Tile URL
           </label>
           <span className={style.inputError}>{errors.tileURL?.message}</span>
@@ -67,14 +71,14 @@ export default function RemoteFileModal({
         <div className={style.buttonRow}>
           <button
             type="button"
-            className={style.button}
+            className={`${style.button} ${style.submitButton}`}
             onClick={closeCallback}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className={style.button}
+            className={`${style.button} ${style.submitButton}`}
             disabled={!formState.isValid || formState.isSubmitting}
           >
             Open

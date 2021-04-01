@@ -1,29 +1,15 @@
 import "@szhsin/react-menu/dist/index.css";
 
-import Modal from "react-modal";
 import OpenSeaDragon from "openseadragon";
 import debounce from "lodash-es/debounce";
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
-import {
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuHeader,
-  MenuItem,
-} from "@szhsin/react-menu";
 import { useHistory } from "react-router";
 
 import FileMenu from "./file-menu";
 import SquareButton from "./square-button";
 import ZoomButton from "./zoom-button";
-import buttonStyle from "./square-button.module.css";
-import menuStyle from "./file-menu.module.css";
 import style from "./viewer.module.css";
-import { ReactComponent as FolderIcon } from "../icons/folder_open-24px.svg";
-import { ReactComponent as LinkIcon } from "../icons/link-24px.svg";
-import { ReactComponent as MenuIcon } from "../icons/more_horiz-24px.svg";
 
 export interface LocalDZISource {
   dziHandle: FileSystemFileHandle;
@@ -42,11 +28,11 @@ interface XMLDZIObject {
     xmlns: string | null;
     Url?: string | null;
     Format: string | null;
-    Overlap: string | number | null;
-    TileSize: string | number | null;
+    Overlap: number | null;
+    TileSize: number | null;
     Size: {
-      Height: string | number | null;
-      Width: string | number | null;
+      Height: number | null;
+      Width: number | null;
     };
   };
 }
@@ -76,21 +62,40 @@ const DEFAULT_OSD_SETTINGS: OpenSeaDragon.Options = {
   navigatorSizeRatio: 0.15,
 };
 
+function getAttrOrDie(el: Element, attrName: string) {
+  const res = el.getAttribute(attrName);
+  if (res === null) throw new Error(`No such attribute ${attrName}`);
+  return res;
+}
+
+function parseOrDie(numeric: string | undefined) {
+  const res = Number(numeric);
+  if (isNaN(res)) throw new Error(`"${numeric}" cannot be parsed as Number`);
+  return res;
+}
+
 // parses XML-format dzi string, and translates it into an object
 function parseXMLDziString(dziString: string): XMLDZIObject {
   const xml = new DOMParser().parseFromString(dziString, "text/xml");
-  const imageTag = xml.getElementsByTagName("Image")[0];
-  const sizeTag = xml.getElementsByTagName("Size")[0];
+  const imageTags = xml.getElementsByTagName("Image");
+  const sizeTags = xml.getElementsByTagName("Size");
+
+  if (imageTags.length < 1 || sizeTags.length < 1) {
+    throw new Error("Bad XML schema");
+  }
+
+  const imageTag = imageTags[0];
+  const sizeTag = sizeTags[0];
 
   return {
     Image: {
-      xmlns: imageTag.getAttribute("xmlns"),
-      Format: imageTag.getAttribute("Format"),
-      Overlap: imageTag.getAttribute("Overlap"),
-      TileSize: imageTag.getAttribute("TileSize"),
+      xmlns: getAttrOrDie(imageTag, "xmlns"),
+      Format: getAttrOrDie(imageTag, "Format"),
+      Overlap: parseOrDie(getAttrOrDie(imageTag, "Overlap") ?? undefined),
+      TileSize: parseOrDie(getAttrOrDie(imageTag, "TileSize") ?? undefined),
       Size: {
-        Height: sizeTag.getAttribute("Height"),
-        Width: sizeTag.getAttribute("Width"),
+        Height: parseOrDie(getAttrOrDie(sizeTag, "Height") ?? undefined),
+        Width: parseOrDie(getAttrOrDie(sizeTag, "Width") ?? undefined),
       },
     },
   };
@@ -296,7 +301,7 @@ export default function Viewer({
   }, [navTo, image, viewer]);
 
   // TODO: add info panel component
-  // TODO: make panel and menu close when you click outside of them
+  // TODO: handle errors when user gives bad dzi input
   return (
     <div className={style.osdViewer} id="osd-viewer">
       {imageToOpen && (
@@ -314,7 +319,9 @@ export default function Viewer({
         idZoomOut={ZOOM_OUT_BUTTON_ID}
         className={style.zoomButton}
       />
-      {!imageToOpen && <FileMenu setImageCallback={setImage} className={style.menuButton}/>}
+      {!imageToOpen && (
+        <FileMenu setImageCallback={setImage} className={style.menuButton} />
+      )}
       <SquareButton
         className={style.fullscreenButton}
         id={FULLSCREEN_BUTTON_ID}

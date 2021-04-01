@@ -8,6 +8,7 @@ import {
   MenuItem,
 } from "@szhsin/react-menu";
 
+import LocalFileModal from "./file-modal-local";
 import RemoteFileModal from "./file-modal-remote";
 import buttonStyle from "./square-button.module.css";
 import style from "./file-menu.module.css";
@@ -52,14 +53,22 @@ export default function FileMenu({
   return (
     <>
       <Modal
-        isOpen={openModal === ModalType.remote}
+        isOpen={openModal !== ModalType.none}
         onRequestClose={() => setOpenModal(ModalType.none)}
         closeTimeoutMS={200}
       >
-        <RemoteFileModal
-          setImageCallback={setImageCallback}
-          closeCallback={closeCallback}
-        />
+        {openModal === ModalType.remote && (
+          <RemoteFileModal
+            setImageCallback={setImageCallback}
+            closeCallback={closeCallback}
+          />
+        )}
+        {supportsFileSystemAccessAPI && openModal === ModalType.file && (
+          <LocalFileModal
+            setImageCallback={setImageCallback}
+            closeCallback={closeCallback}
+          />
+        )}
       </Modal>
       <Menu
         className={style.fileMenu}
@@ -89,6 +98,10 @@ export default function FileMenu({
           }
           disabled={!supportsFileSystemAccessAPI}
           className={style.menuItem}
+          onClick={() => {
+            if (supportsFileSystemAccessAPI) setOpenModal(ModalType.file);
+            return false;
+          }}
         >
           <FolderIcon className={style.menuIcon} />
           <p className={style.menuItemText}>Open from file</p>
