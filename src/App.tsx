@@ -1,15 +1,15 @@
 import React from "react";
+import { Options } from "openseadragon";
 import {
   BrowserRouter as Router,
   HashRouter,
   Route,
   Switch,
 } from "react-router-dom";
-import Viewer, { RemoteDZISource } from "./components/viewer";
-import routeConfig from "../routes.json";
-import osdConfig from "../osd-config.json";
+
 import FourOhFour from "./404";
-import { Options } from "openseadragon";
+import routeConfig from "../routes.json";
+import Viewer, { RemoteDZISource } from "./components/viewer";
 
 function parseCoordinate(x: string | undefined) {
   if (x === undefined) return x;
@@ -17,10 +17,7 @@ function parseCoordinate(x: string | undefined) {
   return isNaN(n) ? undefined : n;
 }
 
-function ZoomPanRouter(props: {
-  imageToOpen: RemoteDZISource;
-  osdConfig: Options;
-}) {
+function ZoomPanRouter(props: { imageToOpen: RemoteDZISource }) {
   return (
     <HashRouter>
       <Switch>
@@ -54,12 +51,12 @@ export default function Index() {
       <Switch>
         {routeConfig.viewerAtIndex && (
           <Route exact path="/">
-            <Viewer osdOptions={osdConfig} />
+            <Viewer />
           </Route>
         )}
         {routeConfig.routes.map((route) => (
           <Route path={`/${route.name}`}>
-            <ZoomPanRouter imageToOpen={route} osdConfig={osdConfig} />
+            <ZoomPanRouter imageToOpen={route} />
           </Route>
         ))}
         <Route path="*">

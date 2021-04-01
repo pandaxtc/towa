@@ -103,11 +103,9 @@ function parseXMLDziString(dziString: string): XMLDZIObject {
 
 export default function Viewer({
   imageToOpen,
-  osdOptions,
   navTo,
 }: {
   imageToOpen?: RemoteDZISource;
-  osdOptions?: OpenSeaDragon.Options;
   navTo?: NavCoordinates;
 }) {
   const [viewer, setViewer] = useState<OpenSeaDragon.Viewer | undefined>(
@@ -119,10 +117,6 @@ export default function Viewer({
   >(imageToOpen);
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-
-  // ref to options, because changing the prop shouldn't do anything
-  // we can't re-initialize the viewer :(
-  const osdOptionRef = useRef(osdOptions);
 
   // used to set initial viewport
   const initialNavRef = useRef(navTo);
@@ -203,7 +197,6 @@ export default function Viewer({
       zoomOutButton: ZOOM_OUT_BUTTON_ID,
       fullPageButton: FULLSCREEN_BUTTON_ID,
       ...DEFAULT_OSD_SETTINGS,
-      ...osdOptionRef.current,
     });
     setViewer(viewer);
 
