@@ -16,7 +16,7 @@
     "react-hook-form": "^6.15.5",
     "react-modal": "^3.12.1",
     "react-router-dom": "^5.2.0",
-    "validator": "^13.5.2"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.4",
