@@ -1,26 +1,18 @@
+import { Menu, MenuButton, MenuHeader, MenuItem } from "@szhsin/react-menu";
+import React, { useState } from "react";
 import Modal from "react-modal";
-import React, { useEffect, useState } from "react";
-import {
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuHeader,
-  MenuItem,
-} from "@szhsin/react-menu";
 
+import FolderIcon from "../icons/folder_open-24px.svg?react";
+import LinkIcon from "../icons/link-24px.svg?react";
+import MenuIcon from "../icons/more_horiz-24px.svg?react";
+import style from "./file-menu.module.css";
 import LocalFileModal from "./file-modal-local";
 import RemoteFileModal from "./file-modal-remote";
 import buttonStyle from "./square-button.module.css";
-import style from "./file-menu.module.css";
-import { ReactComponent as FolderIcon } from "../icons/folder_open-24px.svg";
-import { ReactComponent as LinkIcon } from "../icons/link-24px.svg";
 import { LocalDZISource, RemoteDZISource } from "./viewer";
-import { ReactComponent as MenuIcon } from "../icons/more_horiz-24px.svg";
 
 Modal.setAppElement("#root");
-Object.assign(Modal.defaultStyles.overlay, {
-  backgroundColor: "rgba(0, 0, 0, 0.3)",
-});
+Modal.defaultStyles.overlay!.backgroundColor = "rgba(0, 0, 0, 0.3)";
 Modal.defaultStyles.content = {
   display: "flex",
   background: "none",
@@ -72,7 +64,7 @@ export default function FileMenu({
       </Modal>
       <Menu
         className={style.fileMenu}
-        offsetY={16}
+        gap={16}
         menuButton={
           <MenuButton className={`${className} ${buttonStyle.squareButton}`}>
             <MenuIcon className={buttonStyle.buttonIcon} />

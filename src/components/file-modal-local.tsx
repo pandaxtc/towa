@@ -1,6 +1,4 @@
-import isURL from "validator/es/lib/isURL";
 import React, { SyntheticEvent, useState } from "react";
-import { useForm } from "react-hook-form";
 
 import style from "./file-modal.module.css";
 import { LocalDZISource } from "./viewer";
@@ -15,10 +13,10 @@ export default function LocalFileModal({
   setImageCallback: (image: LocalDZISource) => void;
 }) {
   const [dziFile, setDziFile] = useState<FileSystemFileHandle | undefined>(
-    undefined
+    undefined,
   );
   const [tileDir, setTileDir] = useState<FileSystemDirectoryHandle | undefined>(
-    undefined
+    undefined,
   );
 
   const [errors, setErrors] = useState<FormErrors>();
@@ -41,8 +39,10 @@ export default function LocalFileModal({
       setErrors((errors) => {
         return { ...errors, dziFile: false };
       });
-    } catch (err) {
-      console.log(`Error opening file: ${err.message}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(`Error opening file: ${err.message}`);
+      }
       setErrors((errors) => {
         return { ...errors, dziFile: true };
       });
@@ -56,7 +56,9 @@ export default function LocalFileModal({
         return { ...errors, tileDir: false };
       });
     } catch (err) {
-      console.log(`Error opening directory: ${err.message}`);
+      if (err instanceof Error) {
+        console.log(`Error opening directory: ${err.message}`);
+      }
       setErrors((errors) => {
         return { ...errors, tileDir: true };
       });
@@ -99,7 +101,7 @@ export default function LocalFileModal({
             Tile Directory*
           </label>
           {errors?.tileDir && (
-            <span className={style.inputError}>Error opening file!</span>
+            <span className={style.inputError}>Error opening directory!</span>
           )}
         </div>
         <button
