@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["vite/client", "wicg-file-system-access", "./src/types"],
+    "types": ["vite/client", "wicg-file-system-access", "vite-plugin-svgr/client"],
     "allowJs": false,
     "skipLibCheck": false,
     "esModuleInterop": false,

@@ -1,15 +1,14 @@
 import "@szhsin/react-menu/dist/index.css";
 
-import OpenSeaDragon from "openseadragon";
 import debounce from "lodash-es/debounce";
+import OpenSeaDragon from "openseadragon";
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useHistory } from "react-router";
 
 import FileMenu from "./file-menu";
 import SquareButton from "./square-button";
-import ZoomButton from "./zoom-button";
 import style from "./viewer.module.css";
+import ZoomButton from "./zoom-button";
 
 export interface LocalDZISource {
   dziHandle: FileSystemFileHandle;
@@ -102,37 +101,33 @@ function parseXMLDziString(dziString: string): XMLDZIObject {
 }
 
 export default function Viewer({
-  imageToOpen,
-  navTo,
+  imageToOpen, // navTo,
 }: {
   imageToOpen?: RemoteDZISource;
-  navTo?: NavCoordinates;
+  // navTo?: NavCoordinates;
 }) {
-  const [viewer, setViewer] = useState<OpenSeaDragon.Viewer | undefined>(
-    undefined
-  );
+  console.log(`RERENDER!!!!!!!!!!!!!!!!!!! ${JSON.stringify(imageToOpen)}`);
+
+  const viewerRef = useRef<OpenSeaDragon.Viewer | undefined>(undefined);
 
   const [image, setImage] = useState<
     RemoteDZISource | LocalDZISource | undefined
-  >(imageToOpen);
+  >(undefined);
 
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // used to set initial viewport
-  const initialNavRef = useRef(navTo);
-
-  // history is mutable, so this probably doesn't update...?
-  const history = useHistory();
+  // set initial viewport
+  let initialNav: NavCoordinates | null = null;
 
   // open image by URL
   const openRemoteImage = async (
     viewer: OpenSeaDragon.Viewer,
-    image: RemoteDZISource
+    image: RemoteDZISource,
   ) => {
     const res = await fetch(image.dziURL);
     if (!res.ok)
       throw new Error(
-        `Error ${res.status} requesting .dzi file: ${res.statusText}`
+        `Error ${res.status} requesting .dzi file: ${res.statusText}`,
       );
     const xml = await res.text();
 
@@ -161,7 +156,7 @@ export default function Viewer({
   // Only available on Chrome because of FileSystem Access API support.
   const openLocalImage = async (
     viewer: OpenSeaDragon.Viewer,
-    { dziHandle, filesHandle }: LocalDZISource
+    { dziHandle, filesHandle }: LocalDZISource,
   ) => {
     const dziFile: File = await dziHandle.getFile();
     const dziObject = parseXMLDziString(await dziFile.text());
@@ -178,7 +173,7 @@ export default function Viewer({
     };
 
     console.log(
-      `opening local image with dzi spec ${JSON.stringify(tileSource)}`
+      `opening local image with dzi spec ${JSON.stringify(tileSource)}`,
     );
 
     viewer.open(tileSource);
@@ -186,29 +181,7 @@ export default function Viewer({
 
   // setup and teardown
   useEffect(() => {
-    // @ts-ignore
-    OpenSeaDragon.setImageFormatsSupported({ webp: true });
-
-    // only one viewer object is used throughout.
-    const viewer = OpenSeaDragon({
-      id: "osd-viewer",
-      homeButton: HOME_BUTTON_ID,
-      zoomInButton: ZOOM_IN_BUTTON_ID,
-      zoomOutButton: ZOOM_OUT_BUTTON_ID,
-      fullPageButton: FULLSCREEN_BUTTON_ID,
-      ...DEFAULT_OSD_SETTINGS,
-    });
-    setViewer(viewer);
-
-    viewer.addOnceHandler("open", () => {
-      const navTo = initialNavRef.current;
-      if (navTo?.x !== undefined && navTo?.y !== undefined) {
-        viewer.viewport.panTo(new OpenSeaDragon.Point(navTo?.x, navTo?.y));
-      }
-      if (navTo?.level !== undefined) {
-        viewer.viewport.zoomTo(navTo.level);
-      }
-    });
+    console.log("setup 1.");
 
     // toggle fullscreen button appearance when fullscreen
     let fullscreenListener = () => {
@@ -218,17 +191,60 @@ export default function Viewer({
 
     return () => {
       console.log("cleaning up.");
-      viewer.destroy();
       document.removeEventListener("fullscreenchange", fullscreenListener);
     };
   }, []);
 
-  // add pan/zoom listeners
-  // add if imageToOpen, remove otherwise
   useEffect(() => {
-    if (imageToOpen && viewer) {
+    // Create the viewer on initial render.
+    if (viewerRef.current === undefined) {
+      // @ts-ignore
+      OpenSeaDragon.setImageFormatsSupported({ webp: true });
+
+      console.log("creating viewer.");
+
+      // only one viewer object is used throughout.
+      const viewer = OpenSeaDragon({
+        id: "osd-viewer",
+        homeButton: HOME_BUTTON_ID,
+        zoomInButton: ZOOM_IN_BUTTON_ID,
+        zoomOutButton: ZOOM_OUT_BUTTON_ID,
+        fullPageButton: FULLSCREEN_BUTTON_ID,
+        ...DEFAULT_OSD_SETTINGS,
+      });
+
+      // nav to initial coordinates once.
+      viewer.addOnceHandler("open", () => {
+        let navTo: NavCoordinates | undefined = undefined;
+        if (window.location.hash.length > 0) {
+          const coords = window.location.hash.substring(2).split("/");
+
+          if (coords.length === 3) {
+            navTo = {
+              x: parseOrDie(coords[0]),
+              y: parseOrDie(coords[1]),
+              level: parseOrDie(coords[2]),
+            };
+          }
+        }
+
+        console.log(`initial navto ${JSON.stringify(navTo)}`);
+
+        if (navTo?.x !== undefined && navTo?.y !== undefined) {
+          console.log(`panning to ${JSON.stringify(navTo)}`);
+          viewerRef.current?.viewport.panTo(
+            new OpenSeaDragon.Point(navTo.x, navTo.y),
+            true,
+          );
+        }
+        if (navTo?.level !== undefined) {
+          viewerRef.current?.viewport.zoomTo(navTo.level, undefined, true);
+        }
+      });
+
       // updates route with image coordinates
       const updateHashRoute = debounce(() => {
+        console.log("updating coords.");
         const center = viewer.viewport.getCenter();
         const zoom = viewer.viewport.getZoom();
 
@@ -240,21 +256,20 @@ export default function Viewer({
           "/" +
           zoom.toFixed(4);
 
-        // prevent navigation loop...
-        if (navHash !== window.location.hash.substr(1)) {
-          history.replace(navHash);
+        // prevent navigation loop, or updating when no image
+        if (navHash !== window.location.hash.substring(1) && viewer.isOpen()) {
+          window.location.hash = navHash;
         }
       }, 500);
 
       viewer.addHandler("pan", updateHashRoute);
       viewer.addHandler("zoom", updateHashRoute);
 
-      return () => {
-        viewer.removeHandler("pan", updateHashRoute);
-        viewer.removeHandler("zoom", updateHashRoute);
-      };
+      viewerRef.current = viewer;
     }
-  }, [imageToOpen, viewer, history]);
+
+    setImage(imageToOpen);
+  }, []);
 
   // update image state when prop is updated
   // never actually used in this application, I think?
@@ -264,31 +279,16 @@ export default function Viewer({
 
   // open image when state is changed
   useEffect(() => {
+    console.log("running image effect.");
+    const viewer = viewerRef.current;
     if (image && viewer) {
+      console.log("opening image.");
       if ("dziURL" in image) openRemoteImage(viewer, image);
       else openLocalImage(viewer, image);
     } else {
       viewer?.close();
     }
-  }, [image, viewer]);
-
-  // pan to new location when navTo updated
-  useEffect(() => {
-    if (navTo && viewer) {
-      const center = viewer.viewport.getCenter();
-      const zoom = viewer.viewport.getZoom();
-      if (
-        navTo.x !== undefined &&
-        navTo.y !== undefined &&
-        (navTo.x !== +center.x.toFixed(4) || navTo.y !== +center.y.toFixed(4))
-      ) {
-        viewer.viewport.panTo(new OpenSeaDragon.Point(navTo.x, navTo.y));
-      }
-      if (navTo.level !== undefined && navTo.level !== +zoom.toFixed(4)) {
-        viewer.viewport.zoomTo(navTo.level);
-      }
-    }
-  }, [navTo, image, viewer]);
+  }, [image]);
 
   // TODO: add info panel component
   // TODO: handle errors when user gives bad dzi input

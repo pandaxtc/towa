@@ -1,6 +1,6 @@
-import isURL from "validator/es/lib/isURL";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
+import isURL from "validator/es/lib/isURL";
 
 import style from "./file-modal.module.css";
 import { RemoteDZISource } from "./viewer";
@@ -17,7 +17,12 @@ export default function RemoteFileModal({
   closeCallback: () => void;
   setImageCallback: (image: RemoteDZISource) => void;
 }) {
-  const { register, errors, handleSubmit, formState } = useForm<FormValues>({
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    formState,
+  } = useForm<FormValues>({
     mode: "onBlur",
   });
 
@@ -40,16 +45,15 @@ export default function RemoteFileModal({
           <span className={style.inputError}>{errors.dziURL?.message}</span>
         </div>
         <input
-          name="dziURL"
-          id="dziURL"
-          className={`${style.input}  ${
-            errors.dziURL ? style.invalidInput : ""
-          }`}
-          placeholder="https://towa.dev/pyramid.dzi"
-          ref={register({
+          {...register("dziURL", {
             required: "required",
             validate: (url) => isURL(url) || "Not a URL!",
           })}
+          id="dziURL"
+          className={`${style.input} ${
+            errors.dziURL ? style.invalidInput : ""
+          }`}
+          placeholder="https://towa.dev/pyramid.dzi"
         ></input>
         <div className={style.inputHeader}>
           <label className={style.inputLabel} htmlFor="tileURL">
@@ -58,14 +62,17 @@ export default function RemoteFileModal({
           <span className={style.inputError}>{errors.tileURL?.message}</span>
         </div>
         <input
-          name="tileURL"
           id="tileURL"
           className={`${style.input} ${
             errors.tileURL ? style.invalidInput : ""
           }`}
           placeholder="https://towa.dev/pyramid_files/"
-          ref={register({
-            validate: (url) => url.trim() === "" || isURL(url) || "Not a URL!",
+          {...register("tileURL", {
+            validate: (url) =>
+              url === undefined ||
+              url.trim() === "" ||
+              isURL(url) ||
+              "Not a URL!",
           })}
         ></input>
         <div className={style.buttonRow}>
