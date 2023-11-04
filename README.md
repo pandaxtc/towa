@@ -1,7 +1,7 @@
 # towa (WIP)
 > A web-based viewer for DeepZoom (`.dzi`) images.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/a084f2f2-dab8-4e34-8c8f-f4873ff44086/deploy-status)](https://app.netlify.com/sites/towa-dzi/deploys)
+[![Deploy to Pages](https://github.com/pandaxtc/towa/actions/workflows/deploy.yml/badge.svg)](https://github.com/pandaxtc/towa/actions/workflows/deploy.yml)
 
 towa is a web-based [DeepZoom](https://en.wikipedia.org/wiki/Deep_Zoom) image viewer built using [Vite](https://vitejs.dev/) and a [fork of OpenSeaDragon](https://github.com/pandaxtc/openseadragon) that implements support for viewing on-disk DeepZoom pyramids in browsers that support the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API).
 
