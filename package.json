@@ -9,7 +9,7 @@
   "dependencies": {
     "@szhsin/react-menu": "^1.9.0",
     "lodash-es": "^4.17.21",
-    "openseadragon": "git://github.com:pandaxtc/openseadragon.git",
+    "openseadragon": "git+https://github.com:pandaxtc/openseadragon.git",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-helmet": "^6.1.0",
